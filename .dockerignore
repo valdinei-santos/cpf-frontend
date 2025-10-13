@@ -1,0 +1,14 @@
+# Dependências do Node
+node_modules
+
+# Arquivos de build locais (o Docker vai criar os dele)
+dist
+tmp
+
+# Arquivos de sistema/git
+.git
+.gitignore
+.DS_Store
+
+# Arquivos de configuração de IDEs
+.vscode

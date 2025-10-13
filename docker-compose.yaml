@@ -1,0 +1,18 @@
+services:
+  frontend:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    #container_name: frontend-vue    
+    container_name: frontend
+    ports:
+      - "0.0.0.0:8888:80"
+    restart: unless-stopped    
+    # Se você não definir uma rede globalmente, o Docker Compose criará uma rede padrão.
+    # networks:
+    #   - meu-projeto-network
+
+# Opcional: Definição da rede (só é necessário se você tiver serviços adicionais)
+# networks:
+#   meu-projeto-network:
+#     driver: bridge
