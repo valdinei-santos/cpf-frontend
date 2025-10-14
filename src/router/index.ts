@@ -6,13 +6,13 @@ const router = createRouter({
     {
       path: '/',
       name: 'list',
-      component: () => import('../views/CadastroListView.vue'), // Rota principal
+      component: () => import('../views/ClienteListView.vue'), // Rota principal
     },
     {
       // Se o ID estiver presente, será para edição.
       path: '/cadastro/:id?',
       name: 'form',
-      component: () => import('../views/CadastroFormView.vue'),
+      component: () => import('../views/ClienteFormView.vue'),
       props: true, // Importante: Permite que os parâmetros de rota sejam passados como props
     },
   ],

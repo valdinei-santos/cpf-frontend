@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { watch, computed, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useCadastros } from '@/composables/useCadastros';
-import type { Cadastro } from '@/composables/useCadastros';
+import { useClientes } from '@/composables/useCliente';
+import type { Cliente } from '@/composables/useCliente';
 import { maskDocumento, isDocumentoValido } from '@/utils/documentoValidator';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -10,12 +10,11 @@ import Button from 'primevue/button';
 const router = useRouter();
 const route = useRoute(); 
 
-const { form, cadastros, loading, error, isEditing, saveCadastro, resetForm } = useCadastros();
-//const emit = defineEmits(['navigate']);
+const { form, clientes, loading, error, isEditing, saveCliente, resetForm } = useClientes();
 const inputDocumento = ref('');
 
 /* const props = defineProps<{
-    initialData: Cadastro | null
+    initialData: Cliente | null
 }>(); */
 const props = defineProps<{
     id?: string | number // ID pode vir como string da URL ou número (se for passado explicitamente)
@@ -28,31 +27,15 @@ watch(inputDocumento, (newValue) => {
     form.documento = cleanValue; // O valor limpo é o que vai para o Composable/API
 }, { immediate: true });
 
-// Sincroniza o composable `form` com os dados passados pela prop ao montar
-/* watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(form, newVal);
-        isEditing.value = true;
-        inputDocumento.value = maskDocumento(newVal.documento);
-    } else {
-        resetForm(); // Limpa o formulário para CREATE
-    }
-}, { immediate: true }); */
 watch(() => props.id, (newId) => {
     if (newId) {
-        // ID existe: Modo Edição
-        const idNum = Number(newId);
-        
-        // Simula busca na lista (em um projeto real, faria um fetch específico)
-        const itemToEdit = cadastros.value.find(c => c.id === idNum); 
-
+        const itemToEdit = clientes.value.find(c => c.id === newId); 
         if (itemToEdit) {
             Object.assign(form, itemToEdit);
             isEditing.value = true;
             inputDocumento.value = maskDocumento(itemToEdit.documento);
         } else {
-            // Se o ID não for encontrado (ex: usuário digitou URL errada), volta para lista
-            alert('Cadastro não encontrado.');
+            alert('Cliente não encontrado.');
             router.push({ name: 'list' });
         }
     } else {
@@ -94,18 +77,17 @@ const isFormValid = computed(() => {
 // --- Ação de Salvar ---
 const handleSubmit = async () => {
     if (!isFormValid.value) return;
-    const success = await saveCadastro();
+    const wasEditing = isEditing.value;
+    const success = await saveCliente();
+
     if (success) {
-        alert(`Cadastro ${isEditing.value ? 'atualizado' : 'criado'} com sucesso!`);
-        //emit('navigate', { view: 'list' });
+        alert(`Cliente ${wasEditing ? 'atualizado' : 'criado'} com sucesso!`);
         router.push({ name: 'list' });
     }
-    // O erro é exibido no próprio formulário pelo composable.
 };
 
 const handleCancel = () => {
     resetForm();
-    //emit('navigate', { view: 'list' });
     router.push({ name: 'list' }); 
 }
 </script>
@@ -113,13 +95,17 @@ const handleCancel = () => {
 <template>
   <div class="form-view">
     <div class="card form-card">
-      <h2>{{ isEditing ? 'Editar Cadastro (ID: ' + form.id + ')' : 'Novo Cadastro' }}</h2>
+      <h2>{{ isEditing ? 'Editar Cliente ' : 'Novo Cliente' }}</h2>
       
       <div v-if="error" class="error-state"><p>⚠️ {{ error }}</p></div>
 
       <form @submit.prevent="handleSubmit">
-        
+            
         <div class="form-fields">
+            <div v-if="isEditing" class="form-group full-width">
+                <label for="id">ID</label>
+                <InputText type="text" id="id" v-model="form.id" disabled class="p-inputtext-lg" />  
+            </div>
             <div class="form-group full-width">
               <label for="nome">Nome/Razão Social</label>
               <InputText type="text" id="nome" v-model="form.nome" :disabled="loading" required class="p-inputtext-lg" />
@@ -148,7 +134,7 @@ const handleCancel = () => {
         <div class="form-actions">
           <Button type="submit" :disabled="!isFormValid || loading" severity="success" rounded>
             <span v-if="loading">Salvando...</span>
-            <span v-else>{{ isEditing ? 'Salvar Edição' : 'Adicionar Cadastro' }}</span>
+            <span v-else>{{ isEditing ? 'Salvar Edição' : 'Adicionar Cliente' }}</span>
           </Button>
           <Button type="button" @click="handleCancel" :disabled="loading" label="Cancelar" severity="secondary" rounded></Button>
         </div>

@@ -3,16 +3,14 @@ services:
     build:
       context: . 
       dockerfile: Dockerfile
-    image: cpf-management/cpf-frontend:1.0.0
-    container_name: cpf-frontend
+    image: cpf-management/frontend:1.0.0
+    container_name: frontend
     ports:
       - "0.0.0.0:8888:80"
     restart: unless-stopped    
-    # Se você não definir uma rede globalmente, o Docker Compose criará uma rede padrão.
-    # networks:
-    #   - meu-projeto-network
-
-# Opcional: Definição da rede (só é necessário se você tiver serviços adicionais)
-# networks:
-#   meu-projeto-network:
-#     driver: bridge
+    networks:
+      - mongo-network
+    
+networks:
+  mongo-network:
+    driver: bridge

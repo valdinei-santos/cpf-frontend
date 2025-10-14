@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { RouterView } from 'vue-router'; 
-  import { useCadastros } from './composables/useCadastros';
-  useCadastros()
+  import { useClientes } from './composables/useCliente';
+  useClientes()
 </script>
 
 <template>
   <div class="app-container">
-    <h1>Gerenciamento de Cadastros (CPF/CNPJ)</h1>
+    <h1>Gerenciamento de Clientes (CPF/CNPJ)</h1>
     <RouterView /> 
   </div>
 </template>

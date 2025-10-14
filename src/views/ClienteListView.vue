@@ -1,26 +1,25 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useCadastros } from '@/composables/useCadastros';
-import type { Cadastro } from '@/composables/useCadastros';
+import { useClientes } from '@/composables/useCliente';
+import type { Cliente } from '@/composables/useCliente';
 import { maskDocumento } from '@/utils/documentoValidator';
 import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
 
 const router = useRouter(); 
 
-type SortableColumn = keyof Cadastro;
+type SortableColumn = keyof Cliente;
 
-const { cadastros, loading, error, fetchCadastros, deleteCadastro, toggleBlockStatus } = useCadastros();
+const { clientes, loading, error, fetchClientes, deleteCliente, toggleBlockStatus } = useClientes();
 
-// Navega para '/cadastro'
+// Navega para '/cliente'
 const navigateToCreate = () => {
     router.push({ name: 'form' }); 
 };
 
-// Navega para '/cadastro/ID'
-const startEdit = (cadastro: Cadastro) => {
-    router.push({ name: 'form', params: { id: cadastro.id } });
+// Navega para '/cliente/ID'
+const startEdit = (cliente: Cliente) => {
+    router.push({ name: 'form', params: { id: cliente.id } });
 };
 
 // --- Estado de Filtro e Ordenação ---
@@ -28,27 +27,27 @@ const searchTerm = ref('');
 const sortColumn = ref<SortableColumn>('id'); 
 const sortDirection = ref<'asc' | 'desc'>('asc'); 
 
-const filteredCadastros = computed<ReadonlyArray<Cadastro>>(() => {
+const filteredClientes = computed<ReadonlyArray<Cliente>>(() => {
     const term = searchTerm.value.toLowerCase().trim();
 
     if (!term) {
-        return cadastros.value;
+        return clientes.value;
     }
 
-    return cadastros.value.filter(cadastro => {
-        const maskedDocumento = maskDocumento(cadastro.documento);
+    return clientes.value.filter(cliente => {
+        const maskedDocumento = maskDocumento(cliente.documento);
         
         // Verifica se o termo de busca está no nome, documento limpo ou mascarado
         return (
-            cadastro.nome.toLowerCase().includes(term) ||
-            cadastro.documento.includes(term) ||
+            cliente.nome.toLowerCase().includes(term) ||
+            cliente.documento.includes(term) ||
             maskedDocumento.includes(term)
         );
     });
 });
 
-const sortedCadastros = computed<ReadonlyArray<Cadastro>>(() => {
-    const list = [...filteredCadastros.value]; 
+const sortedClientes = computed<ReadonlyArray<Cliente>>(() => {
+    const list = [...filteredClientes.value]; 
 
     if (!sortColumn.value) {
         return list;
@@ -88,17 +87,17 @@ const setSort = (column: SortableColumn) => {
     }
 };
 
-const handleDelete = async (id: number) => {
-    if (confirm('Tem certeza que deseja excluir este cadastro?')) {
-        const success = await deleteCadastro(id);
+const handleDelete = async (id: string) => {
+    if (confirm('Tem certeza que deseja excluir este cliente?')) {
+        const success = await deleteCliente(id);
         if (success) {
-            alert('Cadastro excluído com sucesso!');
+            alert('Cliente excluído com sucesso!');
         }
     }
 };
 
 onMounted(() => {
-    // fetchCadastros(); // Descomente para simular o carregamento inicial da API
+    fetchClientes();
 });
 
 const getSortIndicator = (column: SortableColumn) => {
@@ -112,10 +111,10 @@ const getSortIndicator = (column: SortableColumn) => {
 <template>
   <div class="list-view">
     <div class="card list-card">
-      <h2>Cadastros Existentes</h2>
+      <h2>Clientes Existentes</h2>
       <div class="header-actions">
           <Button @click="navigateToCreate" :disabled="loading" label="+ Adicionar Novo" severity="success" rounded />
-          <Button @click="fetchCadastros" :disabled="loading" label="Recarregar Lista" severity="info" rounded />
+          <Button @click="fetchClientes" :disabled="loading" label="Recarregar Lista" severity="info" rounded />
           <input 
               type="text" 
               v-model="searchTerm" 
@@ -125,10 +124,10 @@ const getSortIndicator = (column: SortableColumn) => {
           >
       </div>
 
-      <div v-if="loading" class="loading-state"><p>Carregando cadastros...</p></div>
+      <div v-if="loading" class="loading-state"><p>Carregando clientes...</p></div>
       <div v-if="error" class="error-state"><p>⚠️ {{ error }}</p></div>
       
-      <div v-if="sortedCadastros.length > 0 && !loading" class="table-container">
+      <div v-if="sortedClientes.length > 0 && !loading" class="table-container">
         <table>
           <thead>
             <tr>
@@ -148,34 +147,34 @@ const getSortIndicator = (column: SortableColumn) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="cadastro in sortedCadastros" :key="cadastro.id"
-                :class="{ 'blocked-row': cadastro.bloqueado }">
-              <td>{{ cadastro.id }}</td>
-              <td>{{ cadastro.nome }}</td>
-              <td>{{ maskDocumento(cadastro.documento) }}</td>
-              <td>{{ cadastro.telefone }}</td>
+            <tr v-for="cliente in sortedClientes" :key="cliente.id"
+                :class="{ 'blocked-row': cliente.bloqueado }">
+              <td>{{ cliente.id }}</td>
+              <td>{{ cliente.nome }}</td>
+              <td>{{ maskDocumento(cliente.documento) }}</td>
+              <td>{{ cliente.telefone }}</td>
               <td class="action-cell">
                 <div class="blocklist-check">
                     <input 
                         type="checkbox" 
-                        :id="'block-' + cadastro.id"
-                        :checked="cadastro.bloqueado" 
-                        @change="toggleBlockStatus(cadastro.id)" 
+                        :id="'block-' + cliente.id"
+                        :checked="cliente.bloqueado" 
+                        @change="toggleBlockStatus(cliente.id)" 
                         :disabled="loading"
                         title="Marcar/Desmarcar da Blocklist"
                     >
-                    <label :for="'block-' + cadastro.id">Block</label>
+                    <label :for="'block-' + cliente.id">Block</label>
                 </div>
-                <Button @click="startEdit(cadastro)" :disabled="loading" label="Editar" severity="success" rounded />
-                <Button @click="handleDelete(cadastro.id)" :disabled="loading" label="Excluir" severity="danger" rounded />
+                <Button @click="startEdit(cliente)" :disabled="loading" label="Editar" severity="success" rounded />
+                <Button @click="handleDelete(cliente.id)" :disabled="loading" label="Excluir" severity="danger" rounded />
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <p v-else-if="!loading && cadastros.length > 0 && sortedCadastros.length === 0">Nenhum resultado encontrado para "{{ searchTerm }}".</p>
-      <p v-else-if="!loading && cadastros.length === 0">Nenhum cadastro encontrado.</p>
+      <p v-else-if="!loading && clientes.length > 0 && sortedClientes.length === 0">Nenhum resultado encontrado para "{{ searchTerm }}".</p>
+      <p v-else-if="!loading && clientes.length === 0">Nenhum cliente encontrado.</p>
     </div>
   </div>
 </template>
