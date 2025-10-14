@@ -4,5 +4,5 @@ export interface Cadastro {
   nome: string; // Nome/Razão Social
   documento: string; // CPF/CNPJ (somente números)
   telefone: string;
-  isBlocked: boolean;
+  bloqueado: boolean;
 }

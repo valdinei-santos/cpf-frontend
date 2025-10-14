@@ -149,7 +149,7 @@ const getSortIndicator = (column: SortableColumn) => {
           </thead>
           <tbody>
             <tr v-for="cadastro in sortedCadastros" :key="cadastro.id"
-                :class="{ 'blocked-row': cadastro.isBlocked }">
+                :class="{ 'blocked-row': cadastro.bloqueado }">
               <td>{{ cadastro.id }}</td>
               <td>{{ cadastro.nome }}</td>
               <td>{{ maskDocumento(cadastro.documento) }}</td>
@@ -159,7 +159,7 @@ const getSortIndicator = (column: SortableColumn) => {
                     <input 
                         type="checkbox" 
                         :id="'block-' + cadastro.id"
-                        :checked="cadastro.isBlocked" 
+                        :checked="cadastro.bloqueado" 
                         @change="toggleBlockStatus(cadastro.id)" 
                         :disabled="loading"
                         title="Marcar/Desmarcar da Blocklist"

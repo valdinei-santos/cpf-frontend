@@ -3,8 +3,8 @@ services:
     build:
       context: . 
       dockerfile: Dockerfile
-    #container_name: frontend-vue    
-    container_name: frontend
+    image: cpf-management/cpf-frontend:1.0.0
+    container_name: cpf-frontend
     ports:
       - "0.0.0.0:8888:80"
     restart: unless-stopped    
