@@ -56,10 +56,8 @@ export const fetchClientes = async (): Promise<void> => {
   try {
     // GET: /api/cliente
     const response: ApiResponse<ClienteListResponse> = await axios.get(`${API_BASE_URL}/cliente`);
-    //console.log('/cliente da API:', response.data);
     clientes.value = response.data.clientes; // Assumindo que a resposta do seu backend é um array de Cliente
   } catch (err: any) {
-    // Trata erros de rede ou resposta HTTP não-2xx
     error.value = `Erro ao buscar clientes: ${err.message || 'Erro desconhecido'}`;
     console.error('Erro na requisição GET:', err);
   } finally {
@@ -87,8 +85,6 @@ export const saveCliente = async (): Promise<boolean> => {
     } else {
       // POST: /api/cliente
       response = await axios.post(`${API_BASE_URL}/cliente`, dataToSend);
-      
-      // Coloca o novo item na lista local
       clientes.value.push(response.data);
     }
     
@@ -111,7 +107,7 @@ export const deleteCliente = async (id: string): Promise<boolean> => {
     // DELETE: /api/cliente/{id}
     await axios.delete(`${API_BASE_URL}/cliente/${id}`);
     
-    // Opcional: Remove o item da lista local
+    // Remove o item da lista local
     clientes.value = clientes.value.filter(c => c.id !== id);
 
     return true;
@@ -132,7 +128,6 @@ export const toggleBlockStatus = async (id: string): Promise<void> => {
         const currentCad = clientes.value.find(c => c.id === id);
         if (!currentCad) return;
 
-        console.log('Toggle bloqueado para1:', currentCad);
         const updatedData: ClienteForm = { 
           id: currentCad.id,
           nome: currentCad.nome,
@@ -141,15 +136,7 @@ export const toggleBlockStatus = async (id: string): Promise<void> => {
           // Inverte o status de bloqueio
           bloqueado: !currentCad.bloqueado 
         };
-        console.log('Toggle bloqueado para2:', updatedData);
-
-        // Idealmente, você faria um PATCH com o campo que mudou (bloqueado)
-        // Se a sua API só aceitar PUT, você pode usar:
-        /* const updatedData = { 
-            ...currentCad, 
-            bloqueado: !currentCad.bloqueado 
-        } as ClienteForm; // O ID deve estar presente aqui */
-
+        
         // PUT/PATCH: /api/v1/cliente/{id}
         const response: ApiResponse<Cliente> = await axios.put(`${API_BASE_URL}/cliente/${id}`, updatedData);
 
