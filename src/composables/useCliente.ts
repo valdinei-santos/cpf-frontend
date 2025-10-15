@@ -2,7 +2,9 @@ import { ref, reactive, readonly } from 'vue';
 import type { Ref, DeepReadonly } from 'vue';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8889/api/v1'; // Ajuste conforme a porta e caminho da sua API Go
+//const API_BASE_URL = 'http://localhost:8889/api/v1';
+//const API_BASE_URL = 'http://192.168.37.143:8889/api/v1';
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 
 export interface ClienteListResponse {
   clientes: Cliente[];

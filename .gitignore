@@ -13,4 +13,6 @@ dist
 dist-ssr
 coverage
 *.local
+.env.development
+.env.production
 

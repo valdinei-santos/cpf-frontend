@@ -1,7 +1,7 @@
 # =========================================================
 # STAGE 1: BUILD (Compila o projeto usando o Node.js/npm)
 # =========================================================
-FROM node:lts-alpine as build-stage
+FROM node:lts-alpine AS build-stage
 
 WORKDIR /app
 COPY package.json package-lock.json ./
