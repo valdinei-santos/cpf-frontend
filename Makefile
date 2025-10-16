@@ -14,16 +14,16 @@ test: ## Executa os test automatizados da aplicação
 # ==========
 # DOCKER
 # ==========
-CONTAINER_NAME=cpf-frontend
+CONTAINER_NAME=frontend
 
 docker-build: ## Cria a imagem docker com a aplicacao, usando o docker-compose.yaml
-	docker compose build
+	docker-compose build
 docker-rebuild: ## Recria a imagem docker com a aplicação, para o container e sobe novamente
-	docker compose up -d --build
+	docker-compose up -d --build
 docker-start: ## Inicia o container da aplicação
-	docker compose up -d
+	docker-compose up -d
 docker-stop: ## Para o container da aplicação
-	docker compose down
+	docker-compose down
 docker-ps: ## Listar o container rodando
 	-docker ps | grep ${CONTAINER_NAME}
 docker-image: ## Para ver as imagens existentes

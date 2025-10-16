@@ -30,11 +30,12 @@ const sortDirection = ref<'asc' | 'desc'>('asc');
 const filteredClientes = computed<ReadonlyArray<Cliente>>(() => {
     const term = searchTerm.value.toLowerCase().trim();
 
+    const list = clientes.value || [];
     if (!term) {
-        return clientes.value;
+        return list;
     }
 
-    return clientes.value.filter(cliente => {
+    return list.filter(cliente => {
         const maskedDocumento = maskDocumento(cliente.documento);
         
         // Verifica se o termo de busca está no nome, documento limpo ou mascarado
